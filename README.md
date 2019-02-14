@@ -13,3 +13,4 @@ A plugin for PMMP **3.0.0** - **3.6.0** that allows staff to freeze players.
  
 ## Coming soon
  - Toggible auto ban.
+[![](https://poggit.pmmp.io/shield.api/freeze)](https://poggit.pmmp.io/p/freeze)
