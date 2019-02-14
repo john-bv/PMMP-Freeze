@@ -12,7 +12,6 @@ use pocketmine\event\Listener;
 use pocketmine\entity\Entity;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
-use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\player\PlayerEvent;
@@ -24,15 +23,6 @@ class Main extends PluginBase implements Listener {
 	public function onEnable() :void {
 		$this->getLogger()->info(TextFormat::GREEN . "Enabled Freeze. Made by: Bavfalcon9");
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
-	}
-	public function onMove(PlayerMoveEvent $event) : void {
-		$player = $event->getPlayer();
-		if(in_array($player->getName(), $this->frozen)) {
-			$event->setCancelled(true);
-			$player->addActionBarMessage(TextFormat::RED . "Listen to staff.§l DO NOT LOG OUT");
-			$player->addTitle(TextFormat::RED . "You are Frozen!");
-			//$player->sendMessage($this->freeze . TextFormat::RED."You are frozen! Please listen to staff instruction to prevent a ban. §c§lDO NOT LOG OUT!§r§c\n - Refusal to ss is a perm ban");
-		}
 	}
 	public function onAttack(EntityDamageByEntityEvent $event) : void {
 		$damager = $event->getDamager();
