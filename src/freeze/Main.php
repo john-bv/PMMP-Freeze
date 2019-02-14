@@ -20,10 +20,14 @@ use pocketmine\level\Location;
 
 class Main extends PluginBase implements Listener {
 	public $frozen = array();
-	public $freeze = "§8§l(§bFreeze§8)§r ";
+	public $freeze;
 	public function onEnable() :void {
 		$this->getLogger()->info(TextFormat::GREEN . "Enabled Freeze. Made by: Bavfalcon9");
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
+		//Initialize Config
+		$this->saveResource("config.yml");
+		$this->saveDefaultConfig();
+		$this->freeze = $this->getConfig()->("format");
 	}
 	public function onMove(PlayerMoveEvent $event) : void {
 		$player = $event->getPlayer();
@@ -39,6 +43,7 @@ class Main extends PluginBase implements Listener {
 		$entity = $event->getEntity();
 		if($entity instanceof Player) {
 			if(in_array($entity->getName(), $this->frozen)) {
+				if($this->getConfig()-get("attacked-frozen") == true) return;
 				$event->setCancelled(true);
 				if($damager instanceof Player) {
 					$damager->sendMessage($this->freeze . TextFormat::RED."You can't hit frozen Players.");
@@ -47,6 +52,7 @@ class Main extends PluginBase implements Listener {
 		}
 		if($damager instanceof Player) {
 			if(in_array($damager->getName(), $this->frozen)) {
+				if($this->getConfig()-get("attack-frozen") == true) return;
 				$event->setCancelled(true);
 					$damager->sendMessage($this->freeze . TextFormat::RED."You can't hit players while frozen.");
 			}
@@ -64,6 +70,7 @@ class Main extends PluginBase implements Listener {
 	public function onQuit(PlayerQuitEvent $e) {
 		$player = $e->getPlayer();
 		if(in_array($player->getName(), $this->frozen)) {
+			if(!$this->getConfig()->get("autoban")) return;
 			$this->getServer()->getNameBans()->addBan($player->getName(), "§cYou are banned for: §b[Auto] Logging out while frozen", null, "CONSOLE");
 			$this->getServer()->broadcastMessage($this->freeze . $player->getName() . "§f was §cbanned§f because they logged out while frozen.");
 		}
@@ -171,6 +178,7 @@ class Main extends PluginBase implements Listener {
         if ($event->isCancelled()) return true;
 		$player = $event->getPlayer();
 		$message = $event->getMessage();
+		if($this->getConfig("commands-frozen")) return true;
 		if(strpos($message, "/") !== false) {
 			if(in_array($player->getName(), $this->frozen)) {
 				$player->addActionBarMessage(TextFormat::RED . "You are Frozen!");

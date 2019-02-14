@@ -1,0 +1,10 @@
+# Enable auto bans? Set to true if you want this enabled.
+autoban: true
+# Format for freeze.
+format: "§8§l(§bFreeze§8)§r "
+# Allow commands while frozen? Default is false (No)
+commands-frozen: false
+# Allow frozen player to attack? Default is false
+attack-frozen: false
+# Allow frozen player to be attacked? Default is false
+attacked-frozen: false
