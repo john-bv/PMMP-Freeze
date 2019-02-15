@@ -1,5 +1,13 @@
+# Variables:
+# %player% - player frozen
+# %arg% - Command argument on error  - Not supported yet
+
 # Enable auto bans? Set to true if you want this enabled.
 autoban: true
+# Message that displays in chat (use %player%)
+autoban-msg: "§e%player% §fwas §cbanned§f because they logged out while frozen."
+# Message that displays for player.
+autoban-reason: "§cYou are banned for: §bLogging out while frozen"
 # Format for freeze.
 format: "§8§l(§bFreeze§8)§r "
 # Allow commands while frozen? Default is false (No)
@@ -8,3 +16,15 @@ commands-frozen: false
 attack-frozen: false
 # Allow frozen player to be attacked? Default is false
 attacked-frozen: false
+# Frozen tag Defaults to true, if false, normal player tag will be shown.
+frozen-tag: true
+# Text next to player name while frozen
+format-tag: "§c§lFROZEN§r "
+
+# MESSAGES  - Not supported yet
+error-hit: "§cYou can't hit frozen Players."
+error-attack: "§cYou can't hit players while frozen"
+error-noperm: "§cMissing permissions: freeze or freeze.command"
+error-frozen: "§cThis player is already frozen."
+error-immune: "§cThis player is immune."
+error-player: "§cCould not find player: §e%arg%"
