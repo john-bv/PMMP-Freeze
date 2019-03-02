@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace freeze;
+namespace bavfalcon9;
 use pocketmine\plugin\PluginBase;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
@@ -22,21 +22,42 @@ class Main extends PluginBase implements Listener {
 	private $frozen = array();
 	private $freeze;
 	private $freeze_tag;
+	private $config;
+	private $msgs = array(
+		"hit" => false,
+		"attack" => false,
+		"noperm" => false,
+		"frozen" => false,
+		"immune" => false,
+		"player" => false,
+		"title" => false,
+		"actionbar" => false,
+		"frozen-msg" => false
+	);
+
 	public function onEnable() :void {
-		$this->getLogger()->info(TextFormat::GREEN . "Enabled Freeze. Made by: Bavfalcon9");
+		$this->getLogger()->info("Enabled Freeze. Made by: Bavfalcon9");
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		//Initialize Config
 		$this->saveResource("config.yml");
 		$this->saveDefaultConfig();
 		$this->freeze = $this->getConfig()->get("format");
 		$this->freeze_tag = $this->getConfig()->get("format-tag");
+		$keys = array_keys($this->msgs);
+		foreach(array_keys($this->msgs) as $msg) {
+			var_dump($msg);
+			if($this->getConfig()->exists("error-".$msg) !== false) {
+				$this->getLogger()->info($this->getConfig()->get("error-".$msg));
+				$this->msgs[$msg] = $this->getConfig()->get("error-".$msg);
+			}
+		}
 	}
 	public function onMove(PlayerMoveEvent $event) : void {
 		$player = $event->getPlayer();
 		if(in_array($player->getName(), $this->frozen)) {
 			$event->setCancelled(true);
-			$player->addActionBarMessage(TextFormat::RED . "Listen to staff.§l DO NOT LOG OUT");
-			$player->addTitle(TextFormat::RED . "You are Frozen!");
+			if($this->getConfig()->get("action-msg") === true && $this->msgs["title"] !== false) $player->addActionBarMessage($this->msgs["title"]);
+			if($this->getConfig()->get("title-msg") === true && $this->msgs["actionbar"] !== false) $player->addTitle($this->msgs["actionbar"]);
 			//$player->sendMessage($this->freeze . TextFormat::RED."You are frozen! Please listen to staff instruction to prevent a ban. §c§lDO NOT LOG OUT!§r§c\n - Refusal to ss is a perm ban");
 		}
 	}
@@ -48,7 +69,8 @@ class Main extends PluginBase implements Listener {
 				if($this->getConfig()->get("attacked-frozen") === false) {
 					$event->setCancelled(true);
 					if($damager instanceof Player) {
-						$damager->sendMessage($this->freeze . TextFormat::RED."You can't hit frozen Players.");
+						if($this->msgs["attack"] !== false) $damager->sendMessage($this->freeze . $this->msgs["attack"]);
+						//TextFormat::RED."You can't hit frozen Players."
 					}
 				}
 			}
@@ -57,7 +79,7 @@ class Main extends PluginBase implements Listener {
 			if(in_array($damager->getName(), $this->frozen)) {
 				if($this->getConfig()->get("attack-frozen") === false) {
 					$event->setCancelled(true);
-					$damager->sendMessage($this->freeze . TextFormat::RED."You can't hit players while frozen.");
+					if($this->msgs["hit"] !== false) $damager->sendMessage($this->freeze . $this->msgs["hit"]);
 				}
 			}
 		}
@@ -68,14 +90,13 @@ class Main extends PluginBase implements Listener {
 		if(in_array($player->getName(), $this->frozen)) {
 			$player->setImmobile(true);
 			if($this->getConfig()->get("frozen-tag") === true) $player->setNameTag($this->freeze_tag.$player->getNametag()); //fix bug with purechat/perms
-			$player->addActionBarMessage(TextFormat::RED . "You are Frozen!");
-			$player->sendMessage($this->freeze . TextFormat::RED . "You are frozen! Please listen to staff instruction to prevent a ban. §c§lDO NOT LOG OUT!§r§c ");
+			if($this->msgs["onjoin"] !== false) $player->sendMessage($this->freeze . $this->msgs["onjoin"]);
 		}
 	}
 	public function onQuit(PlayerQuitEvent $e) {
 		$player = $e->getPlayer();
 		if(in_array($player->getName(), $this->frozen)) {
-			if(!$this->getConfig()->get("autoban")) return;
+			if(!$this->getConfig()->get("autoban")) return false;
 			else {
 				$this->getServer()->getNameBans()->addBan($player->getName(), $this->filterVar('autoban-reason', $player), null, "CONSOLE");
 				$this->getServer()->broadcastMessage($this->freeze . $this->filterVar('autoban-msg', $player));
@@ -85,38 +106,37 @@ class Main extends PluginBase implements Listener {
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool {
 		if($command->getName() === "freeze") {
 			if($sender->hasPermission("freeze.command") === false && $sender->hasPermission("freeze") === false && $sender->isOp() === false) {
-				$sender->sendMessage($this->freeze . TextFormat::RED . "Missing permissions: freeze or freeze.command");
+				if($this->msgs["noperm"] !== false) $sender->sendMessage($this->msgs["noperm"]);
 				return false;			
 			}
 			if(!isset($args[0])) {
-				$sender->sendMessage($this->freeze . TextFormat::RED . "Provide a player");
+				$sender->sendMessage($this->freeze . TextFormat::RED . "Provide a player"); // ADD SUPPORT FOR CMDS
 				return false;
 			}
 
-			if($this->findPlayer($args[0]) === false) {
-				$sender->sendMessage($this->freeze . TextFormat::RED . "Could not find player: §e".$args[0]);
+			if($this->getServer()->getPlayer($args[0]) === null) {
+				$sender->sendMessage($this->freeze . TextFormat::RED . "Could not find player: §e".$args[0]); // ADD SUPPORT FOR CMDS
 				return false;	
 			}
 
-			$player = $this->findPlayer($args[0]);
-			$p = $this->getServer()->getPlayer($player);
-			if($p->hasPermission("freeze.immune") || $p->hasPermission("freeze") || $p->isOp()) {
-				$sender->sendMessage($this->freeze . TextFormat::RED . "This player is immune.");
+			$player = $this->getServer()->getPlayer($args[0]);
+			if($player->hasPermission("freeze.immune") || $player->hasPermission("freeze") || $player->isOp()) {
+				if($this->msgs["immune"] !== false) $sender->sendMessage($this->freeze . $this->msgs["immune"]);
 				return false;
 			}
-			if(in_array($player, $this->frozen)) {
-				$sender->sendMessage($this->freeze . TextFormat::RED . "This player is already frozen.");
+			if(in_array($player->getName(), $this->frozen)) {
+				if($this->msgs["frozen"] !== false) $sender->sendMessage($this->freeze . $this->msgs["frozen"]);
 				return false;		
 			} else {
-				array_push($this->frozen, $player);
-				$p->setImmobile(true);
-				$this->getServer()->broadcastMessage($this->freeze ."§e" . $player . "§r is now frozen.");
-				if($this->getConfig()->get("frozen-tag") === true) $p->setNameTag($this->freeze_tag.$p->getNametag());
-				$p->addActionBarMessage(TextFormat::RED . "You are Frozen!");
-				$p->sendMessage($this->freeze . TextFormat::RED . "You are frozen! Please listen to staff instruction to prevent a ban. §c§lDO NOT LOG OUT!§r§c ");
+				array_push($this->frozen, $player->getName());
+				$player->setImmobile(true);
+				$this->getServer()->broadcastMessage($this->freeze ."§e" . $player->getName() . "§r is now frozen."); // Adding to config soon.
+				if($this->getConfig()->get("frozen-tag") === true) $player->setNameTag($this->freeze_tag.$player->getNametag());
+				if($this->getConfig()->get("action-msg") === true && $this->msgs["title"] !== false) $player->addActionBarMessage($this->msgs["title"]);
+				if($this->getConfig()->get("title-msg") === true && $this->msgs["actionbar"] !== false) $player->addTitle($this->msgs["actionbar"]);
+				if($this->getConfig()->get("frozen-msg") === true && $this->msgs["frozen-msg"] !== false) $player->sendMessage($this->freeze . $this->msgs["frozen-msg"]);
 				return true;
 			}
-			return true;
 		}
 		if($command->getName() === "frozen") {
 			if($sender->hasPermission("freeze.command") === false && $sender->hasPermission("freeze") === false && $sender->isOp() === false) {
@@ -136,53 +156,31 @@ class Main extends PluginBase implements Listener {
 				return false;
 			}
 
-			if($this->findPlayer($args[0]) === false) {
+			if($this->getServer()->getPlayer($args[0]) === null) {
 				$sender->sendMessage($this->freeze . TextFormat::RED."Could not find player: §e".$args[0]);
 				return false;	
 			}
 
-			$player = $this->findPlayer($args[0]);
-			$p = $this->getServer()->getPlayer($player);
-			if($p->hasPermission("freeze.immune") || $p->hasPermission("freeze") || $p->isOp()) {
-				$sender->sendMessage($this->freeze . TextFormat::RED . "This player is immune.");
-				return false;
-			}
-			if(in_array($player, $this->frozen)) {
-				array_splice($this->frozen, array_search($player, $this->frozen), 1);
-				$p->sendMessage($this->freeze . TextFormat::GREEN."You are no longer frozen.");
-				$p->setImmobile(false);
-				$p->addTitle(TextFormat::GREEN . "You are unfrozen!");
-				$p->setNameTag(str_replace($this->freeze_tag, "", $p->getNameTag()));
-				$sender->sendMessage($this->freeze . "§e" . $player . "§r is no longer frozen.");
+			$player = $this->getServer()->getPlayer($args[0]);
+			if(in_array($player->getName(), $this->frozen)) {
+				array_splice($this->frozen, array_search($player->getName(), $this->frozen), 1);
+				$player->sendMessage($this->freeze . TextFormat::GREEN."You are no longer frozen.");
+				$player->setImmobile(false);
+				$player->addTitle(TextFormat::GREEN . "You are unfrozen!");
+				$player->setNameTag(str_replace($this->freeze_tag, "", $player->getNameTag()));
+				$this->getServer()->broadcastMessage($this->freeze . "§e" . $player->getName() . "§r is no longer frozen.");
 				return true;		
 			} else {
-				$sender->sendMessage($this->freeze . "§e" . $player . "§r is not frozen!");
+				$sender->sendMessage($this->freeze . "§e" . $player->getName() . "§r is not frozen!");
 				return true;
 			}
 			return true;
 		}
 		return true;
 	}
-	// Function being deprecated soon due to it's uselessness owo
-	public function findPlayer($username) {
-		$plyerFull = "";
-		foreach($this->getServer()->getOnlinePlayers() as $oplayer) {
-			if(strlen($plyerFull) === 0) {
-				$name = $oplayer->getName();
-				if(strpos(strtolower($name), strtolower($username)) === 0) {
-					$plyerFull = $name;
-					continue;
-				}
-			}
-		}
-		if(strlen($plyerFull) === 0) {
-			return false;
-		} else {
-			return $plyerFull;
-		}
-		return $plyerFull;
-	}
-	public function onPlayerCommand(PlayerCommandPreprocessEvent $event) {
+	// findplayer deprecated due to it's uselessness
+
+	public function onPlayerCommand(PlayerCommandPreprocessEvent $event) : bool {
         if ($event->isCancelled()) return true;
 		$player = $event->getPlayer();
 		$message = $event->getMessage();
@@ -192,10 +190,20 @@ class Main extends PluginBase implements Listener {
 					$player->addActionBarMessage(TextFormat::RED . "You are Frozen!");
 					$player->sendMessage($this->freeze . TextFormat::RED."You can not use commands while frozen.");
 					$event->setCancelled(true);
-					return true;
 				}
 			}
 		}
+		if($this->getConfig("dms-frozen") === false) {
+			$cmds = ["/msg", "/w", "/tell", "/whisper", "/message", "/pm", "/m"];
+			foreach($cmds as $cmd) {
+				if(strpos($message, $cmd) !== false) {
+					$event->setCancelled(true);
+					$player->sendMessage($this->freeze . TextFormat::RED."You can not private message while frozen.");
+					break;
+				}
+			}
+		}
+		return true;
 	}
 	private function filterVar(String $str, $p) {
 		$configType = $this->getConfig()->get($str);
@@ -204,7 +212,7 @@ class Main extends PluginBase implements Listener {
 	}
 
 	public function onDisable() {
-		$this->getLogger()->info(TextFormat::RED . "Freeze Plugin Disabled");
+		$this->getLogger()->info("Freeze Plugin Disabled");
 	}
 
 }

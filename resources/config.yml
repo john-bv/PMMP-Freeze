@@ -16,15 +16,31 @@ commands-frozen: false
 attack-frozen: false
 # Allow frozen player to be attacked? Default is false
 attacked-frozen: false
+# Allow frozen players to use /msg and such? Default is true (true = allow /msg 's)
+dms-frozen: true
 # Frozen tag Defaults to true, if false, normal player tag will be shown.
 frozen-tag: true
+# Frozen message, aka when frozen (one time)
+frozen-msg: true
 # Text next to player name while frozen
 format-tag: "§c§lFROZEN§r "
+# Frozen title message
+title-msg: true
+# Frozen actionbar message
+action-msg: true
+# Timer - Idea, not made yet.
+timer: 300 # 5 minutes
+timer-after: "autoban" # autoban false kick warn
 
-# MESSAGES  - Not supported yet
-error-hit: "§cYou can't hit frozen Players."
-error-attack: "§cYou can't hit players while frozen"
-error-noperm: "§cMissing permissions: freeze or freeze.command"
-error-frozen: "§cThis player is already frozen."
-error-immune: "§cThis player is immune."
-error-player: "§cCould not find player: §e%arg%"
+# MESSAGES  - Set each to false to disable the feature entirely (If not a setting above^)
+error-hit: "§cYou can't hit frozen Players." # Supported
+error-attack: "§cYou can't hit players while frozen" # Supported
+error-noperm: "§cMissing permissions: freeze or freeze.command" # Unsupported
+error-frozen: "§cThis player is already frozen." # Supported
+error-frozen-msg: "§cYou are now frozen! Listen to staff."
+error-immune: "§cThis player is immune." # Supported
+error-provideArgument: "§cError, provide a §e%arg%"
+error-player: "§cCould not find player: §e%arg%" # Unsupported
+error-onjoin: "§cYou are Frozen" # Supported
+error-title: "§cYou are Frozen" # Supported
+error-actionbar: "§cDo not log out" # Supported
