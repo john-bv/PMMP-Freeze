@@ -11,7 +11,7 @@ A plugin for PMMP **3.0.0** - **3.6.0** that allows staff to freeze players.  [!
  - `/thaw <player>` - Thaw or unfreeze a player
  - `/unfreeze <player>` - Thaw or unfreeze a player
 
-## Config | true = enabled, false = disabled
+## Config Explanations (See config for more details)
  - `autoban` - Auto bans players if they leave while frozen 
  - `autoban-msg` - The message that displays in chat when autobanned.
  - `format` - What you would like the freeze format to look like
