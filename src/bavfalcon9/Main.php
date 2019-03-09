@@ -45,7 +45,6 @@ class Main extends PluginBase implements Listener {
 		$this->freeze_tag = $this->getConfig()->get("format-tag");
 		$keys = array_keys($this->msgs);
 		foreach(array_keys($this->msgs) as $msg) {
-			var_dump($msg);
 			if($this->getConfig()->exists("error-".$msg) !== false) {
 				$this->getLogger()->info($this->getConfig()->get("error-".$msg));
 				$this->msgs[$msg] = $this->getConfig()->get("error-".$msg);
