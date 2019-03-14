@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Olybear9;
+namespace Bavfalcon9\freeze;
 use pocketmine\plugin\PluginBase;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
@@ -46,7 +46,6 @@ class Main extends PluginBase implements Listener {
 		$keys = array_keys($this->msgs);
 		foreach(array_keys($this->msgs) as $msg) {
 			if($this->getConfig()->exists("error-".$msg) !== false) {
-				$this->getLogger()->info($this->getConfig()->get("error-".$msg));
 				$this->msgs[$msg] = $this->getConfig()->get("error-".$msg);
 			}
 		}
@@ -183,23 +182,30 @@ class Main extends PluginBase implements Listener {
         if ($event->isCancelled()) return true;
 		$player = $event->getPlayer();
 		$message = $event->getMessage();
-		if($this->getConfig("commands-frozen") === false) {
-			if(strpos($message, "/") !== false) {
-				if(in_array($player->getName(), $this->frozen)) {
-					$player->addActionBarMessage(TextFormat::RED . "You are Frozen!");
-					$player->sendMessage($this->freeze . TextFormat::RED."You can not use commands while frozen.");
-					$event->setCancelled(true);
-				}
-			}
+		$isDm = false;
+		$cmds = ["/msg", "/w", "/tell", "/whisper", "/message", "/pm", "/m"];
+		foreach($cmds as $cmd) {
+			if(!in_array($player->getName(), $this->frozen)) continue;
+			if(strpos($message, $cmd) !== false) $isDm = true;
 		}
-		if($this->getConfig("dms-frozen") === false) {
+		if($this->getConfig()->get("dms-frozen") === false) {
 			$cmds = ["/msg", "/w", "/tell", "/whisper", "/message", "/pm", "/m"];
 			foreach($cmds as $cmd) {
+				if(!in_array($player->getName(), $this->frozen)) continue;
 				if(strpos($message, $cmd) !== false) {
 					$event->setCancelled(true);
 					$player->sendMessage($this->freeze . TextFormat::RED."You can not private message while frozen.");
 					break;
+					return true;
 				}
+			}
+		}
+		if($this->getConfig()->get("commands-frozen") === false && $isDm === false) {
+			if(strpos($message, "/") !== false) {
+				if(!in_array($player->getName(), $this->frozen)) return false;
+					$event->setCancelled(true);
+					$player->addActionBarMessage(TextFormat::RED . "You are Frozen!");
+					$player->sendMessage($this->freeze . TextFormat::RED."You can not use commands while frozen.");
 			}
 		}
 		return true;
