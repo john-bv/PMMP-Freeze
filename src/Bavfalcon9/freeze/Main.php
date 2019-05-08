@@ -6,9 +6,6 @@
  * |  __| '__/ _ \/ _ \_  / _ \
  * | |  | | |  __/  __// /  __/
  * |_|  |_|  \___|\___/___\___|
- *
- * If this code works, Bavfalcon9 wrote it. 
- * If not, I'm not sure who wrote it.
  *	
  */
 
@@ -48,7 +45,6 @@ class Main extends PluginBase implements Listener {
 	);
 
 	public function onEnable() :void {
-		$this->getLogger()->info("Enabled Freeze. Made by: Bavfalcon9");
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		//Initialize Config
 		$this->saveResource("config.yml");
@@ -226,10 +222,6 @@ class Main extends PluginBase implements Listener {
 		$configType = $this->getConfig()->get($str);
 		$fin = str_replace("%player%", $p->getName(), $configType);
 		return $fin;
-	}
-
-	public function onDisable() {
-		$this->getLogger()->info("Freeze Plugin Disabled");
 	}
 
 }
