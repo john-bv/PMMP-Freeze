@@ -1,6 +1,5 @@
 # freeze
-=======
-A plugin for PMMP **3.0.0** - **3.6.\*** that allows staff to freeze players. 
+A plugin for PMMP **3.0.0** - **3.8.2** that allows staff to freeze players. [![](https://poggit.pmmp.io/shield.api/freeze)](https://poggit.pmmp.io/p/freeze)
 
 ## Permissions
  - `freeze` Allows all permission for the plugin.
