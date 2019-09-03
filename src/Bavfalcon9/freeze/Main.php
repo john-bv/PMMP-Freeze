@@ -61,7 +61,7 @@ class Main extends PluginBase implements Listener {
 	public function onMove(PlayerMoveEvent $event) : void {
 		$player = $event->getPlayer();
 		if(in_array($player->getName(), $this->frozen)) {
-			$event->setCancelled(true);
+			$player->setImmobile(true);
 			if($this->getConfig()->get("action-msg") === true && $this->msgs["title"] !== false) $player->addActionBarMessage($this->msgs["title"]);
 			if($this->getConfig()->get("title-msg") === true && $this->msgs["actionbar"] !== false) $player->addTitle($this->msgs["actionbar"]);
 			//$player->sendMessage($this->freeze . TextFormat::RED."You are frozen! Please listen to staff instruction to prevent a ban. §c§lDO NOT LOG OUT!§r§c\n - Refusal to ss is a perm ban");
