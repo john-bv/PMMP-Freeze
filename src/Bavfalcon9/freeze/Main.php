@@ -12,21 +12,27 @@
 declare(strict_types=1);
 	
 namespace Bavfalcon9\freeze;
+
+use pocketmine\Server;
+use pocketmine\player\Player;
+
 use pocketmine\plugin\PluginBase;
+use pocketmine\event\Listener;
+
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
-use pocketmine\player\Player;
+
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\Server;
 use pocketmine\utils\TextFormat;
-use pocketmine\event\Listener;
 use pocketmine\entity\Entity;
+#Events
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\player\PlayerEvent;
+
 use pocketmine\world\Location;
 
 class Main extends PluginBase implements Listener {
