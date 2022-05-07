@@ -36,6 +36,7 @@ use pocketmine\event\player\PlayerEvent;
 use pocketmine\world\Location;
 
 class Main extends PluginBase implements Listener {
+	
 	private $frozen = array();
 	private $freeze;
 	private $freeze_tag;
@@ -199,7 +200,7 @@ class Main extends PluginBase implements Listener {
 		$player = $event->getPlayer();
 		$message = $event->getMessage();
 		$isDm = false;
-		$cmds = ["/msg", "/w", "/tell", "/whisper", "/message", "/pm", "/m"];
+		$cmds = ["/msg", "/w", "/tell", "/whisper", "/message", "/say", "/m"];
 		foreach($cmds as $cmd) {
 			if(!in_array($player->getName(), $this->frozen)) continue;
 			if(strpos($message, $cmd) !== false) $isDm = true;
@@ -228,7 +229,7 @@ class Main extends PluginBase implements Listener {
 	}
 	private function filterVar(String $str, $p) {
 		$configType = $this->getConfig()->get($str);
-		$fin = str_replace("%player%", $p->getName(), $configType);
+		$fin = str_replace("{PLAYER}", $p->getName(), $configType);
 		return $fin;
 	}
 
