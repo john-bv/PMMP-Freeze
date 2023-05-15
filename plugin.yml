@@ -1,26 +1,31 @@
 name: freeze
 main: Bavfalcon9\freeze\Main
-version: 2.1.1
-api: [3.0.0]
+version: 2.2.1
+api: [4.0.0]
 load: POSTWORLD
-author: Bavfalcon9
-description: Freeze
+authors: [Bavfalcon9, fernanACM]
+description: Freeze for PocketMine-MP 4.0
+
 commands:
   frozen:
     description: See a list of frozen users.
+    permission: freeze.command
   freeze:
     description: Freeze a player
+    permission: freeze.command
   unfreeze:
     description: Unfreeze a player
+    permission: freeze.command
   thaw:
     description: Unfreeze a player
+    permission: freeze.command
 permissions:
-    freeze:
-      description: All permissions for freeze
-      default: op
-    freeze.immune:
-      description: Makes yourself immune to /freeze
-      default: op
-    freeze.command:
-      description: Allows yourself to freeze players
-      default: op
+  freeze:
+    description: All permissions for freeze
+    default: op
+  freeze.immune:
+    description: Makes yourself immune to /freeze
+    default: op
+  freeze.command:
+    description: Allows yourself to freeze players
+    default: op
